@@ -97,7 +97,6 @@ class EquipmentWidgetInstaller
 		for (EquipmentWidgetInstaller.Screen screen : EquipmentWidgetInstaller.Screen.values())
 		{
 			EquipmentWidgetInstaller.addButton(client, screen, onClick);
-			break;
 		}
 	}
 
@@ -126,6 +125,10 @@ class EquipmentWidgetInstaller
 		int h = setBonus.getOriginalHeight();
 		int x = setBonus.getOriginalX() + (w / 2) + (padding / 2);
 		int y = setBonus.getOriginalY();
+		if (screen == Screen.BANK_EQUIPMENT) // uses ABSOLUTE_CENTER
+		{
+			y += parent.getHeight() / 2 - setBonus.getHeight() / 2;
+		}
 
 		// now shift the Set Bonus and Stat Bonus buttons over a bit to make room
 		setBonus.setOriginalX(setBonus.getOriginalX() - (w / 2) - (padding / 2))
