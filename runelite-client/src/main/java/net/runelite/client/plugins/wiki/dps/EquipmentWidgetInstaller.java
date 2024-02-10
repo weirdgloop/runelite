@@ -104,8 +104,6 @@ class EquipmentWidgetInstaller
 	 * Shifts over the Set Bonus / Stat Bonus buttons
 	 * and adds new widgets to make a visually equal button with a different name.
 	 */
-	// This method creates widgets to be visually equal
-	// to the Set Bonus button but offset and with a different name.
 	void addButton(Client client, Screen screen, Runnable onClick)
 	{
 		Widget parent = client.getWidget(screen.getGroupId(), screen.getParentId());
