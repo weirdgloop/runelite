@@ -143,10 +143,8 @@ class EquipmentWidgetInstaller
 		int bgY = (y + refComponents[0].getOriginalY()) + (h - bgHeight) / 2;
 		spriteWidgets[0] = parent.createChild(-1, WidgetType.GRAPHIC)
 			.setSpriteId(refComponents[0].getSpriteId())
-			.setOriginalX(bgX)
-			.setOriginalY(bgY)
-			.setOriginalWidth(bgWidth)
-			.setOriginalHeight(bgHeight);
+			.setPos(bgX, bgY)
+			.setSize(bgWidth, bgHeight);
 		spriteWidgets[0].revalidate();
 
 		// borders and corners all use absolute positioning which is easy
@@ -154,10 +152,8 @@ class EquipmentWidgetInstaller
 		{
 			spriteWidgets[i] = parent.createChild(-1, WidgetType.GRAPHIC)
 				.setSpriteId(refComponents[i].getSpriteId())
-				.setOriginalX(x + refComponents[i].getOriginalX())
-				.setOriginalY(y + refComponents[i].getOriginalY())
-				.setOriginalWidth(refComponents[i].getOriginalWidth())
-				.setOriginalHeight(refComponents[i].getOriginalHeight());
+				.setPos(x + refComponents[i].getOriginalX(), y + refComponents[i].getOriginalY())
+				.setSize(refComponents[i].getOriginalWidth(), refComponents[i].getOriginalHeight());
 			spriteWidgets[i].revalidate();
 		}
 
@@ -170,10 +166,8 @@ class EquipmentWidgetInstaller
 			.setTextShadowed(refComponents[9].getTextShadowed())
 			.setXTextAlignment(refComponents[9].getXTextAlignment())
 			.setYTextAlignment(refComponents[9].getYTextAlignment())
-			.setOriginalX(x)
-			.setOriginalY(y)
-			.setOriginalWidth(w)
-			.setOriginalHeight(h);
+			.setPos(x, y)
+			.setSize(w, h);
 		text.revalidate();
 
 		// we'll give the text layer the listeners since it covers the whole area
