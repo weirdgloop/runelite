@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2024 LlemonDuck
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.client.plugins.wiki.dps;
 
-import lombok.Data;
-import lombok.Getter;
-import net.runelite.api.annotations.Interface;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-/**
- * An event where a {@link net.runelite.api.widgets.Widget} has been loaded.
- */
-@Data
-public class WidgetLoaded
+@Singleton
+class DpsLauncher
 {
-	/**
-	 * The group ID of the loaded widget.
-	 */
-	@Interface
-	@Getter(onMethod_ = @Interface)
-	private int groupId;
+
+	@Inject
+	private DpsLauncher()
+	{
+		// todo cook
+	}
+
+	void launch()
+	{
+		// todo cook
+		System.out.println("🚀 Pretend I'm opening your gear in Wiki DPS Calc!");
+	}
+
 }

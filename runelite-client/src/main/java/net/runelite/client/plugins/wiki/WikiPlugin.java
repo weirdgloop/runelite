@@ -60,6 +60,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.wiki.dps.WikiDpsManager;
 import net.runelite.client.ui.JagexColors;
 import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.Text;
@@ -94,6 +95,9 @@ public class WikiPlugin extends Plugin
 	@Inject
 	private Provider<WikiSearchChatboxTextInput> wikiSearchChatboxTextInputProvider;
 
+	@Inject
+	private WikiDpsManager wikiDpsManager;
+
 	private Widget icon;
 
 	private boolean wikiSelected = false;
@@ -110,12 +114,14 @@ public class WikiPlugin extends Plugin
 	public void startUp()
 	{
 		clientThread.invokeLater(this::addWidgets);
+		wikiDpsManager.startUp();
 	}
 
 	@Override
 	public void shutDown()
 	{
 		clientThread.invokeLater(this::removeWidgets);
+		wikiDpsManager.shutDown();
 	}
 
 	private void removeWidgets()
