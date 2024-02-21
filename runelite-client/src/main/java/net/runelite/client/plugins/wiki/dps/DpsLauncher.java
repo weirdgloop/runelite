@@ -24,23 +24,124 @@
  */
 package net.runelite.client.plugins.wiki.dps;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.*;
+import net.runelite.client.util.LinkBrowser;
+import okhttp3.*;
+
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Singleton
 class DpsLauncher
 {
+	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+	private static final String UI_ENDPOINT = "https://tools.runescape.wiki/osrs-dps/";
+	private static final String SHORTLINK_ENDPOINT = "https://tools.runescape.wiki/osrs-dps/shortlink";
 
 	@Inject
-	private DpsLauncher()
+	private Client client;
+
+	@Inject
+	private OkHttpClient okHttpClient;
+
+	@Inject
+	private Gson gson;
+
+	@Nullable
+	private JsonObject createEquipmentObject(ItemContainer itemContainer, int slotId) {
+
+		Item item = itemContainer.getItem(slotId);
+		if (item != null)
+		{
+			JsonObject o = new JsonObject();
+			o.addProperty("id", item.getId());
+			return o;
+		}
+		return null;
+	}
+
+	private JsonObject buildShortlinkData()
 	{
-		// todo cook
+		JsonObject j = new JsonObject();
+
+		// Build the player's loadout data
+		JsonArray loadouts = new JsonArray();
+		ItemContainer eqContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+
+		JsonObject l = new JsonObject();
+		JsonObject eq = new JsonObject();
+
+		eq.add("ammo", createEquipmentObject(eqContainer, EquipmentInventorySlot.AMMO.getSlotIdx()));
+		eq.add("body", createEquipmentObject(eqContainer, EquipmentInventorySlot.BODY.getSlotIdx()));
+		eq.add("cape", createEquipmentObject(eqContainer, EquipmentInventorySlot.CAPE.getSlotIdx()));
+		eq.add("feet", createEquipmentObject(eqContainer, EquipmentInventorySlot.BOOTS.getSlotIdx()));
+		eq.add("hands", createEquipmentObject(eqContainer, EquipmentInventorySlot.GLOVES.getSlotIdx()));
+		eq.add("head", createEquipmentObject(eqContainer, EquipmentInventorySlot.HEAD.getSlotIdx()));
+		eq.add("legs", createEquipmentObject(eqContainer, EquipmentInventorySlot.LEGS.getSlotIdx()));
+		eq.add("neck", createEquipmentObject(eqContainer, EquipmentInventorySlot.AMULET.getSlotIdx()));
+		eq.add("ring", createEquipmentObject(eqContainer, EquipmentInventorySlot.RING.getSlotIdx()));
+		eq.add("shield", createEquipmentObject(eqContainer, EquipmentInventorySlot.SHIELD.getSlotIdx()));
+		eq.add("weapon", createEquipmentObject(eqContainer, EquipmentInventorySlot.WEAPON.getSlotIdx()));
+		l.add("equipment", eq);
+
+		JsonObject skills = new JsonObject();
+		skills.addProperty("atk", client.getRealSkillLevel(Skill.ATTACK));
+		skills.addProperty("def", client.getRealSkillLevel(Skill.DEFENCE));
+		skills.addProperty("hp", client.getRealSkillLevel(Skill.HITPOINTS));
+		skills.addProperty("magic", client.getRealSkillLevel(Skill.MAGIC));
+		skills.addProperty("mining", client.getRealSkillLevel(Skill.MINING));
+		skills.addProperty("prayer", client.getRealSkillLevel(Skill.PRAYER));
+		skills.addProperty("ranged", client.getRealSkillLevel(Skill.RANGED));
+		skills.addProperty("str", client.getRealSkillLevel(Skill.STRENGTH));
+		l.add("skills", skills);
+
+		JsonObject buffs = new JsonObject();
+		buffs.addProperty("inWilderness", client.getVarbitValue(Varbits.IN_WILDERNESS) == 1);
+		buffs.addProperty("kandarinDiary", client.getVarbitValue(Varbits.DIARY_KANDARIN_HARD) == 1);
+		buffs.addProperty("onSlayerTask", client.getVarpValue(VarPlayer.SLAYER_TASK_SIZE) > 0);
+		buffs.addProperty("chargeSpell", client.getVarpValue(VarPlayer.CHARGE_GOD_SPELL) > 0);
+		l.add("buffs", buffs);
+
+		l.addProperty("name", client.getLocalPlayer().getName());
+
+		loadouts.add(l);
+		j.add("loadouts", loadouts);
+
+		return j;
 	}
 
 	void launch()
 	{
-		// todo cook
-		System.out.println("🚀 Pretend I'm opening your gear in Wiki DPS Calc!");
+		JsonObject jsonBody = buildShortlinkData();
+		Request request = new Request.Builder()
+				.url(SHORTLINK_ENDPOINT)
+				.post(RequestBody.create(JSON, jsonBody.toString()))
+				.build();
+
+		OkHttpClient client = okHttpClient.newBuilder()
+				.callTimeout(5, TimeUnit.SECONDS)
+				.build();
+		try (Response response = client.newCall(request).execute())
+		{
+			if (response.isSuccessful() && response.body() != null) {
+				ShortlinkResponse resp = gson.fromJson(response.body().charStream(), ShortlinkResponse.class);
+				LinkBrowser.browse(UI_ENDPOINT + "?id=" + resp.data);
+			} else {
+				log.error("Failed to create shortlink for DPS calculator: " + response.code());
+			}
+		}
+		catch (IOException ioException)
+		{
+			log.error("Failed to create shortlink for DPS calculator");
+		}
 	}
 
 }
