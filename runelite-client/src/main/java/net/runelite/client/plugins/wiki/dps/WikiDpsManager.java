@@ -26,6 +26,8 @@ package net.runelite.client.plugins.wiki.dps;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.callback.ClientThread;
@@ -39,6 +41,8 @@ public class WikiDpsManager
 	private final Client client;
 	private final ClientThread clientThread;
 	private final EventBus eventBus;
+
+	@Getter
 	private final DpsLauncher launcher;
 
 	@Inject

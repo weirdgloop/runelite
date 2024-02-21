@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Singleton
-class DpsLauncher
+public class DpsLauncher
 {
 	private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 	private static final String UI_ENDPOINT = "https://tools.runescape.wiki/osrs-dps/";
@@ -118,7 +118,7 @@ class DpsLauncher
 		return j;
 	}
 
-	void launch()
+	public void launch()
 	{
 		JsonObject jsonBody = buildShortlinkData();
 		Request request = new Request.Builder()

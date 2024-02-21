@@ -213,6 +213,12 @@ public class WikiPlugin extends Plugin
 			}
 		});
 
+		icon.setAction(6, "DPS");
+		icon.setOnOpListener((JavaScriptCallback) ev ->
+		{
+			this.wikiDpsManager.getLauncher().launch();
+		});
+
 		// This doesn't always run because we cancel the menuop
 		icon.setOnTargetLeaveListener((JavaScriptCallback) ev -> onDeselect());
 		icon.revalidate();
